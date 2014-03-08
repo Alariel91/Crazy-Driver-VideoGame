@@ -1,5 +1,6 @@
 package com.mony.crazydriver.managers;
 
+import com.mony.crazydriver.characters.Car;
 import com.mony.crazydriver.characters.Enemy;
 
 
@@ -31,8 +32,7 @@ public class LevelManager {
 	}
 	public void loadNextLevel(){
 		spriteManager.enemies.clear();
-		SpriteManager.friends.clear();
-		SpriteManager.objetos.clear();
+		spriteManager.friends.clear();
 		Enemy cocheazul=new Enemy(ResourceManager.getAnimation("car_azul"),20,500,190f);
 		spriteManager.enemies.add(cocheazul);
 		
@@ -45,8 +45,7 @@ public class LevelManager {
 		Enemy cocheazul2=new Enemy(ResourceManager.getAnimation("car_azul"),410,500,210f);
 		spriteManager.enemies.add(cocheazul2);
 		
-		SpriteManager.generarPersonas();
-		SpriteManager.generarObjetos();
+		
 	}
 	
 

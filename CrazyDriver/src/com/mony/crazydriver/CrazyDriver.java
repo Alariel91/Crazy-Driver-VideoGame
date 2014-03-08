@@ -1,11 +1,14 @@
 package com.mony.crazydriver;
 
+
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.mony.crazydriver.managers.ConfigurationManager;
 import com.mony.crazydriver.screens.MainMenuScreen;
 import com.mony.crazydriver.util.Constants;
 
@@ -14,8 +17,13 @@ public class CrazyDriver extends Game{
 	public SpriteBatch batch;
 	public BitmapFont font;
 	private Skin skin;
+	public boolean paused;
+	
+	public ConfigurationManager configurationManager;
+	
 	@Override
 	public void create() {
+		configurationManager = new ConfigurationManager();
 		batch= new SpriteBatch();
 		font = new BitmapFont();
 		

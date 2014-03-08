@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.mony.crazydriver.CrazyDriver;
+import com.mony.crazydriver.managers.ResourceManager;
 import com.mony.crazydriver.util.Constants;
 
 public class MainMenuScreen implements Screen{
@@ -56,6 +57,7 @@ public class MainMenuScreen implements Screen{
 				
 				dispose();
 				game.setScreen(new GameScreen(game));
+				
 	
 			}
 		});
@@ -136,8 +138,6 @@ public class MainMenuScreen implements Screen{
 		// TODO Auto-generated method stub
 		
 	}
-
-
 
 	@Override
 	public void resize(int arg0, int arg1) {

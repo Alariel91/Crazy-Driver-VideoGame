@@ -19,6 +19,7 @@ public class Character {
 	public Character(Animation animation,float x,float y){
 		
 		this.animation=animation;
+		currentFrame=animation.getKeyFrame(0);
 		position = new Vector2(x,y);
 		
 		

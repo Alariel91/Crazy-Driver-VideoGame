@@ -3,7 +3,11 @@ package com.mony.crazydriver.screens;
 
 
 
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.mony.crazydriver.CrazyDriver;
 import com.mony.crazydriver.characters.Car;
 import com.mony.crazydriver.managers.LevelManager;
@@ -14,10 +18,9 @@ public class GameScreen implements Screen{
 	CrazyDriver game;
 	LevelManager levelManager;
 	SpriteManager spriteManager;
-	
 	public GameScreen(CrazyDriver game){
-		this.game=game;
 		
+		this.game=game;
 		ResourceManager.loadAllResources();
 		spriteManager= new SpriteManager(game);
 		
@@ -44,6 +47,7 @@ public class GameScreen implements Screen{
 	}
 	@Override
 	public void show() {
+		game.paused = false;
 		
 	}
 	@Override
@@ -51,41 +55,56 @@ public class GameScreen implements Screen{
 	
 		spriteManager.update(dt);
 		spriteManager.render(game.batch);
-		
+		update(dt);
 		game.batch.begin();
 			drawOnscreenText();
 		game.batch.end();
 	}
 	@Override
 	public void dispose() {
-	
+		
 		
 	}
 
+	/**
+	 * Cuando esta pantalla se oculta, se pausa
+	 */
 	@Override
 	public void hide() {
-	
 		
+		game.paused = true;
 	}
 
 	@Override
 	public void pause() {
 		
-		
+		game.paused = true;
 	}
 
-	
 	@Override
 	public void resize(int arg0, int arg1) {
-
-		
 	}
 
 	@Override
 	public void resume() {
-		
-		
+		game.paused = false;
 	}
+	private void update(float dt) {
+	
+		  handleKeyboard();
+	}
+
+	private void handleKeyboard() {
+		  
+		  /*
+		   * Si el usuario pulsa la tecla ESCAPE se muestra un menú durante el juego
+		   */
+		  if (Gdx.input.isKeyPressed(Keys.P)) {
+		   game.setScreen(new InGameMenuScreen(game, this));
+		   
+		  }
+		 }
+
 
 
 

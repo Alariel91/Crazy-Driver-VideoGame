@@ -10,11 +10,9 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -25,7 +23,7 @@ import com.mony.crazydriver.characters.Friend;
 import com.mony.crazydriver.characters.Objetos;
 import com.mony.crazydriver.screens.EndScreen;
 import com.mony.crazydriver.screens.GameOverScreen;
-import com.mony.crazydriver.screens.GameScreen;
+
 
 
 public class SpriteManager {
@@ -34,13 +32,13 @@ public class SpriteManager {
 	Car car;
 	Sprite sprite;
 	Array<Enemy> enemies;
-	static Array<Friend> friends;
-	static Array<Objetos> objetos;
+	Array<Friend> friends;
+	Array<Objetos> objetos;
 
 	private Texture texture;
 	float scrollTimer=0;
-	static long ultimaPersona;
-	static long ultimoObjeto;
+	long ultimaPersona;
+	long ultimoObjeto;
 	LevelManager levelManager;
 
 	
@@ -57,7 +55,7 @@ public class SpriteManager {
 		texture.setWrap(TextureWrap.Repeat,TextureWrap.Repeat);
 		sprite = new Sprite(texture, 0, 0, 512, 512);
 		//genero aleatoriamente peatones
-		generarPersonas();
+		//generarPersonas();
 		generarObjetos();
 		this.game = game;
 
@@ -94,9 +92,10 @@ public class SpriteManager {
 				friend.render(batch);
 			}
 		   
-		    for (Objetos objecto : objetos) {
-		    	objecto.render(batch);
+		    for (Objetos objeto : objetos) {
+		    	objeto.render(batch);
 			}
+		  
 		batch.end();
 	}
 	public void update(float dt){
@@ -110,18 +109,25 @@ public class SpriteManager {
 			  }
 		if(car.getScore()==10 && levelManager.getCurrentLevel()==2){
 			game.setScreen(new EndScreen(game));
+
 		}	  
 		car.update(dt);
 		for (Friend friend : friends) {
-			friend.update(dt,ultimaPersona);
+			friend.update(dt);
 		}
 		for(Enemy enemy:enemies){
 			enemy.update(dt);
 		}
-		for (Objetos objecto : objetos) {
-		    objecto.update(dt);
+		for (Objetos objeto : objetos) {
+		    objeto.update(dt);
 		}
 		checkCollisions(dt);
+		
+		if (TimeUtils.nanoTime() - ultimaPersona > 2099000000){
+			generarPersonas();
+		}
+		System.out.println(car.getSpeed());
+		
 		
 	}
 	private void handleInput(float dt){
@@ -151,19 +157,40 @@ public class SpriteManager {
 		Objetos objeto=null;
 		for (int i = enemies.size-1; i >= 0; i--) {
 			enemy = enemies.get(i);
-			for (int j = friends.size-1; j >= 1; j--) {
+			for (int j = friends.size-1; j >= 0; j--) {
 				friend=friends.get(j);
 				if(enemy.rect.overlaps(friend.rect)){
 					friends.removeIndex(j);
+					if (game.configurationManager.isSoundEnabled()){
 					ResourceManager.getSound("atropellar").play();
+					}
 				}
 			}
 			
 			}
+		
+		//Cuando un coche choca con un monstruo rosita
+		for (int i = enemies.size-1; i >= 0; i--) {
+			enemy = enemies.get(i);
+			for (int j = objetos.size-1; j >= 0; j--) {
+				objeto=objetos.get(j);
+				if(enemy.rect.overlaps(objeto.rect)){
+					objetos.removeIndex(j);
+					if(car.getSpeed()>150){
+						generarObjetos();
+						}
+					
+				}
+			}
+			
+			}
+			
 		//cuando mi coche choca con un enemigo coche	
 		for (Enemy enemy1 : enemies) {
 			if(car.rect.overlaps(enemy1.rect)){
+				if (game.configurationManager.isSoundEnabled()){
 				ResourceManager.getSound("shit").play();
+				}
 				game.setScreen(new GameOverScreen(game));
 			}
 		}
@@ -171,7 +198,9 @@ public class SpriteManager {
 		for (int i = friends.size-1; i >=0; i--) {
 			friend=friends.get(i);
 			if(car.rect.overlaps(friend.rect)){
+				if (game.configurationManager.isSoundEnabled()){
 				ResourceManager.getSound("ty").play();
+				}
 				car.addScore(1);
 				friends.removeIndex(i);
 			}
@@ -182,12 +211,15 @@ public class SpriteManager {
 			if(car.rect.overlaps(objeto.rect)){
 				car.setSpeed(car.getSpeed()-50);
 				objetos.removeIndex(i);
+				if(car.getSpeed()>150){
+				generarObjetos();
+				}
 			}
 		}
 	
 	}
 	
-	public static void generarPersonas(){
+	public void generarPersonas(){
 			int x = MathUtils.random(0, 512 - 32);
 			int y = MathUtils.random(0, 512-55);
 		  Friend friend = new Friend(ResourceManager.getAnimation("woman_andando"), x, y,50f);
@@ -195,26 +227,14 @@ public class SpriteManager {
 	
 		  ultimaPersona = TimeUtils.nanoTime();
 	}
-	public static void generarObjetos(){
+	
+	public void generarObjetos(){
 		int x = MathUtils.random(0, 500-16);
 		int y = MathUtils.random(0, 500-16);
-		int x2 = MathUtils.random(0, 500-16);
-		int y2 = MathUtils.random(0, 500-16);
-		int x3 = MathUtils.random(0, 500-16);
-		int y3 = MathUtils.random(0, 500-16);
-	  Objetos objeto = new Objetos(ResourceManager.getAnimation("enemy_pink"), x, y,0f);
-	  objetos.add(objeto);
-	  
-	  Objetos objeto2 = new Objetos(ResourceManager.getAnimation("enemy_pink"), x2, y2,0f);
-	  objetos.add(objeto2);
-	  
-	  Objetos objeto3 = new Objetos(ResourceManager.getAnimation("enemy_pink"), x3, y3,0f);
-	  objetos.add(objeto3);
-	 
-	 // ultimoObjeto= TimeUtils.nanoTime();
-	}
+		Objetos objeto = new Objetos(ResourceManager.getAnimation("enemy_pink"), x, y,0f);
+		objetos.add(objeto);
 	
-		
+	}
 	
 	public Car getCar() {
 		return car;
@@ -225,6 +245,4 @@ public class SpriteManager {
 	}
 
 	
-	
-
 }

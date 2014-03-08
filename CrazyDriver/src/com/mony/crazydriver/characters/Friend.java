@@ -14,11 +14,9 @@ public class Friend extends Character{
 	}
 
 	@Override
-	public void update(float dt,long ultimaPersona){
-		super.update(dt,ultimaPersona);
-		if (TimeUtils.nanoTime() - ultimaPersona > 2099000000){
-			   SpriteManager.generarPersonas();
-			  }
+	public void update(float dt){
+		super.update(dt);
+		
 		//va hacia la derecha
 		position.add(new Vector2(dt*speed,0));
 		
